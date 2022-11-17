@@ -33,6 +33,8 @@ type VoteData struct {
 	Vote    *bool  `json:"vote,omitempty"`
 }
 
+const FILE_FORMAT = "webp"
+
 func routerAPI() http.Handler {
 	r := chi.NewRouter()
 
@@ -68,7 +70,7 @@ func routerAPI() http.Handler {
 
 			author := r.Header.Get("Authorization")
 
-			_, err = os.Open("photos/" + voteData.Picture + ".png")
+			_, err = os.Open("photos/" + voteData.Picture + "." + FILE_FORMAT)
 			if os.IsNotExist(err) {
 				RespondErr(w, ErrBadBody)
 				return
@@ -106,7 +108,7 @@ func routerAPI() http.Handler {
 			dir, _ := os.ReadDir("photos")
 			for _, f := range dir {
 				id := f.Name()
-				id = id[:len(id)-4]
+				id = id[:len(id)-len(FILE_FORMAT)-1]
 
 				if included := existingIDs[id]; !included {
 					left = append(left, id)
